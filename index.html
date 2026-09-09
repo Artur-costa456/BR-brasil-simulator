@@ -1,0 +1,3034 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mercado City Brasil</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    user-select:none;
+}
+
+body{
+    background:#171717;
+    font-family:Arial,sans-serif;
+    display:flex;
+    justify-content:center;
+    padding:15px;
+}
+
+#game{
+    width:950px;
+    max-width:100%;
+    height:700px;
+    position:relative;
+    overflow:hidden;
+    border:4px solid #333;
+    border-radius:18px;
+    background:#ddd;
+    touch-action:none;
+}
+
+/* MENU */
+
+#startMenu{
+    position:absolute;
+    inset:0;
+    z-index:9999;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(#70c9ef,#62b6df);
+}
+
+.menuBox{
+    width:430px;
+    max-width:90%;
+    background:white;
+    border:4px solid #333;
+    border-radius:20px;
+    padding:35px 25px;
+    text-align:center;
+}
+
+.menuBox h1{
+    font-size:32px;
+    margin-bottom:15px;
+}
+
+.menuBox p{
+    color:#555;
+    line-height:1.5;
+    margin-bottom:25px;
+}
+
+#playButton{
+    width:100%;
+    border:0;
+    padding:18px;
+    border-radius:13px;
+    background:#249f4b;
+    color:white;
+    font-size:22px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* HUD */
+
+#hud{
+    position:absolute;
+    top:10px;
+    left:10px;
+    right:10px;
+    z-index:800;
+    display:flex;
+    justify-content:space-between;
+    pointer-events:none;
+}
+
+.hudBox{
+    background:rgba(0,0,0,.78);
+    color:white;
+    padding:9px 14px;
+    border-radius:10px;
+    font-weight:bold;
+}
+
+/* CENÁRIOS */
+
+.scene{
+    position:absolute;
+    inset:0;
+    display:none;
+}
+
+.scene.active{
+    display:block;
+}
+
+/* PERSONAGEM */
+
+#player{
+    position:absolute;
+    left:50%;
+    top:70%;
+    width:42px;
+    height:60px;
+    transform:translate(-50%,-50%);
+    z-index:500;
+}
+
+.character{
+    width:42px;
+    height:60px;
+    position:relative;
+}
+
+#player.faceLeft .character{
+    transform:scaleX(-1);
+}
+
+.hair{
+    position:absolute;
+    top:0;
+    left:9px;
+    width:24px;
+    height:12px;
+    background:#34251d;
+    border-radius:13px 13px 4px 4px;
+    z-index:3;
+}
+
+.head{
+    position:absolute;
+    top:5px;
+    left:10px;
+    width:22px;
+    height:22px;
+    background:#d7a17c;
+    border:2px solid #333;
+    border-radius:50%;
+}
+
+.eye{
+    position:absolute;
+    right:3px;
+    top:7px;
+    width:3px;
+    height:3px;
+    background:#111;
+    border-radius:50%;
+}
+
+.playerBody{
+    position:absolute;
+    top:25px;
+    left:8px;
+    width:27px;
+    height:24px;
+    background:#1976d2;
+    border:2px solid #333;
+    border-radius:6px;
+}
+
+.arm{
+    position:absolute;
+    top:27px;
+    width:7px;
+    height:22px;
+    background:#d7a17c;
+    border:1px solid #333;
+    transform-origin:top;
+}
+
+.armLeft{left:3px;}
+.armRight{right:3px;}
+
+.leg{
+    position:absolute;
+    top:46px;
+    width:8px;
+    height:18px;
+    background:#222;
+    transform-origin:top;
+}
+
+.legLeft{left:10px;}
+.legRight{right:10px;}
+
+#player.walking .armLeft{
+    animation:arm1 .28s infinite alternate;
+}
+
+#player.walking .armRight{
+    animation:arm2 .28s infinite alternate;
+}
+
+#player.walking .legLeft{
+    animation:leg1 .28s infinite alternate;
+}
+
+#player.walking .legRight{
+    animation:leg2 .28s infinite alternate;
+}
+
+@keyframes arm1{
+    from{transform:rotate(25deg);}
+    to{transform:rotate(-25deg);}
+}
+
+@keyframes arm2{
+    from{transform:rotate(-25deg);}
+    to{transform:rotate(25deg);}
+}
+
+@keyframes leg1{
+    from{transform:rotate(18deg);}
+    to{transform:rotate(-18deg);}
+}
+
+@keyframes leg2{
+    from{transform:rotate(-18deg);}
+    to{transform:rotate(18deg);}
+}
+
+/* MERCADO */
+
+#marketScene{
+    background:
+    repeating-linear-gradient(
+        90deg,
+        #ded8c8 0 45px,
+        #cec7b5 45px 48px
+    );
+}
+
+.wall{
+    height:130px;
+    background:#f4eddf;
+    border-bottom:5px solid #aaa;
+}
+
+.sceneTitle{
+    position:absolute;
+    top:35px;
+    left:25px;
+    font-size:28px;
+    font-weight:bold;
+    z-index:20;
+}
+
+.shelf{
+    position:absolute;
+    width:190px;
+    height:90px;
+    border:4px solid #60452f;
+    background:#8f6746;
+}
+
+.products{
+    width:100%;
+    height:100%;
+    background:
+    repeating-linear-gradient(
+        90deg,
+        #e63946 0 12px,
+        #ffd166 12px 24px,
+        #06d6a0 24px 36px,
+        #118ab2 36px 48px
+    );
+}
+
+#s1{left:60px;top:180px;}
+#s2{left:320px;top:180px;}
+#s3{left:60px;top:340px;}
+#s4{left:320px;top:340px;}
+
+.cashier{
+    position:absolute;
+    right:60px;
+    top:190px;
+    width:200px;
+    height:110px;
+    border:4px solid #60452f;
+    background:#b49474;
+    display:grid;
+    place-items:center;
+    font-weight:bold;
+}
+
+/* CIDADE */
+
+#cityScene{
+    background:#76c9ef;
+}
+
+.sun{
+    position:absolute;
+    right:45px;
+    top:45px;
+    width:65px;
+    height:65px;
+    border-radius:50%;
+    background:#ffd60a;
+}
+
+.kite{
+    position:absolute;
+    top:60px;
+    left:55%;
+    width:36px;
+    height:36px;
+    background:#e63946;
+    transform:rotate(45deg);
+    animation:kiteFly 4s infinite alternate ease-in-out;
+}
+
+.kite:after{
+    content:"";
+    position:absolute;
+    width:2px;
+    height:140px;
+    background:#555;
+    left:35px;
+    top:25px;
+    transform:rotate(-30deg);
+}
+
+@keyframes kiteFly{
+    from{translate:-20px 0;}
+    to{translate:35px 20px;}
+}
+
+.cityBuildings{
+    position:absolute;
+    top:150px;
+    width:100%;
+    height:200px;
+    display:flex;
+    align-items:flex-end;
+    gap:5px;
+}
+
+.building{
+    border:3px solid #555;
+    position:relative;
+}
+
+.b1{width:170px;height:130px;background:#f4a261;}
+.b2{width:180px;height:170px;background:#2a9d8f;}
+.b3{width:150px;height:120px;background:#e76f51;}
+.b4{flex:1;height:150px;background:#e9c46a;}
+
+.window{
+    display:inline-block;
+    width:30px;
+    height:30px;
+    background:#c9efff;
+    border:2px solid #555;
+    margin:15px;
+}
+
+.sidewalk{
+    position:absolute;
+    top:350px;
+    width:100%;
+    height:90px;
+    background:#bbb;
+    border-top:4px solid #999;
+    border-bottom:4px solid #999;
+}
+
+.road{
+    position:absolute;
+    top:440px;
+    bottom:0;
+    width:100%;
+    background:#444;
+}
+
+.roadLine{
+    position:absolute;
+    top:550px;
+    height:8px;
+    width:100%;
+    background:
+    repeating-linear-gradient(
+        90deg,
+        #ffd60a 0 45px,
+        transparent 45px 90px
+    );
+}
+
+/* LOJAS */
+
+.cityShop{
+    position:absolute;
+    top:285px;
+    height:70px;
+    z-index:30;
+    border:4px solid #444;
+    color:white;
+    display:grid;
+    place-items:center;
+    font-weight:bold;
+    text-align:center;
+}
+
+#marketShop{
+    left:20px;
+    width:180px;
+    background:#d62828;
+}
+
+#carShop{
+    left:220px;
+    width:190px;
+    background:#264653;
+}
+
+#calculatorShop{
+    left:430px;
+    width:190px;
+    background:#6a4c93;
+}
+
+#horseShop{
+    right:25px;
+    width:190px;
+    background:#895737;
+}
+
+/* CARRO */
+
+#driveCar{
+    position:absolute;
+    left:63%;
+    top:76%;
+    width:110px;
+    height:45px;
+    background:#e63946;
+    border:3px solid #222;
+    border-radius:12px;
+    z-index:300;
+}
+
+#driveCar:before,
+#driveCar:after{
+    content:"";
+    position:absolute;
+    bottom:-13px;
+    width:24px;
+    height:24px;
+    border-radius:50%;
+    background:#111;
+}
+
+#driveCar:before{left:14px;}
+#driveCar:after{right:14px;}
+
+.carWindow{
+    position:absolute;
+    left:28px;
+    top:-20px;
+    width:55px;
+    height:24px;
+    background:#a8d7ef;
+    border:3px solid #222;
+    border-radius:12px 12px 2px 2px;
+}
+
+/* MOTO */
+
+#driveMoto{
+    position:absolute;
+    left:30%;
+    top:86%;
+    width:80px;
+    height:35px;
+    z-index:300;
+}
+
+.motoBody{
+    position:absolute;
+    left:18px;
+    top:8px;
+    width:45px;
+    height:16px;
+    border-radius:10px;
+    background:#1d70b7;
+    border:2px solid #222;
+}
+
+.motoWheel{
+    position:absolute;
+    top:18px;
+    width:24px;
+    height:24px;
+    border:5px solid #111;
+    border-radius:50%;
+}
+
+.motoWheel.left{left:0;}
+.motoWheel.right{right:0;}
+
+.handle{
+    position:absolute;
+    right:7px;
+    top:0;
+    width:18px;
+    height:3px;
+    background:#222;
+    transform:rotate(-20deg);
+}
+
+/* PILOTO NA MOTO */
+
+.motoRider{
+    position:absolute;
+    left:28px;
+    top:-28px;
+    width:38px;
+    height:48px;
+    display:none;
+    z-index:5;
+}
+
+.riderHead{
+    position:absolute;
+    top:0;
+    left:9px;
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    background:#d7a17c;
+    border:2px solid #333;
+}
+
+.riderBody{
+    position:absolute;
+    top:17px;
+    left:6px;
+    width:23px;
+    height:21px;
+    background:#1976d2;
+    border:2px solid #333;
+    border-radius:6px;
+    transform:rotate(18deg);
+}
+
+.riderArm{
+    position:absolute;
+    top:21px;
+    left:23px;
+    width:23px;
+    height:6px;
+    background:#d7a17c;
+    border:1px solid #333;
+    border-radius:5px;
+    transform:rotate(22deg);
+}
+
+.riderLeg{
+    position:absolute;
+    top:32px;
+    left:13px;
+    width:30px;
+    height:7px;
+    background:#222;
+    border-radius:5px;
+    transform:rotate(25deg);
+}
+
+/* LOJA DE CARROS */
+
+#carScene{
+    background:#d7d7d7;
+}
+
+.showroomFloor{
+    position:absolute;
+    top:130px;
+    bottom:0;
+    width:100%;
+    background:#777;
+}
+
+.showCar{
+    position:absolute;
+    width:130px;
+    height:55px;
+    border:3px solid #222;
+    border-radius:15px;
+}
+
+.redCar{left:110px;top:240px;background:#e63946;}
+.blueCar{left:390px;top:240px;background:#457b9d;}
+.yellowCar{left:670px;top:240px;background:#e9c46a;}
+
+.price{
+    position:absolute;
+    top:320px;
+    background:white;
+    padding:8px;
+    border-radius:8px;
+    font-weight:bold;
+}
+
+.p1{left:110px;}
+.p2{left:390px;}
+.p3{left:670px;}
+
+/* CALCULADORAS */
+
+#calculatorScene{
+    background:#d8d0e4;
+}
+
+.calcShelf{
+    position:absolute;
+    top:170px;
+    width:220px;
+    height:250px;
+    background:#555;
+    border:5px solid #333;
+}
+
+.calc1{left:75px;}
+.calc2{left:365px;}
+.calc3{right:75px;}
+
+.calculator{
+    margin:20px auto;
+    width:110px;
+    background:#222;
+    border-radius:10px;
+    padding:9px;
+}
+
+.calculatorName{
+    color:white;
+    text-align:center;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+.calculatorPrice{
+    background:white;
+    width:max-content;
+    margin:8px auto;
+    padding:6px 10px;
+    border-radius:8px;
+    font-weight:bold;
+}
+
+.calcDisplay{
+    height:32px;
+    background:#bbd9a5;
+    padding:5px;
+    text-align:right;
+    margin-bottom:7px;
+}
+
+.calcButtons{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:4px;
+}
+
+.calcBtn{
+    background:#777;
+    color:white;
+    text-align:center;
+    padding:5px;
+}
+
+.calcStoreCounter{
+    position:absolute;
+    right:40px;
+    top:75px;
+    width:180px;
+    height:65px;
+    background:#8b6c4d;
+    border:4px solid #55422f;
+    display:grid;
+    place-items:center;
+    font-weight:bold;
+}
+
+#useCalculatorButton{
+    position:absolute;
+    right:25px;
+    bottom:90px;
+    padding:13px 17px;
+    border:none;
+    border-radius:10px;
+    background:#6a4c93;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#calculatorPanel{
+    position:absolute;
+    z-index:4000;
+    width:300px;
+    max-width:90%;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    background:white;
+    border:4px solid #333;
+    border-radius:15px;
+    padding:18px;
+    display:none;
+    text-align:center;
+}
+
+#calcInput{
+    width:100%;
+    padding:12px;
+    font-size:22px;
+    text-align:right;
+    margin:10px 0;
+    border:2px solid #333;
+    border-radius:8px;
+}
+
+.realCalcKeys{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:7px;
+}
+
+.realCalcKeys button{
+    padding:12px;
+    border:2px solid #333;
+    background:#eee;
+    border-radius:7px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#clearCalculator,
+#closeCalculator{
+    margin-top:10px;
+    width:100%;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#clearCalculator{background:#e0a11f;}
+#closeCalculator{background:#555;}
+
+/* HARAS */
+
+#horseScene{
+    background:#8bcf75;
+}
+
+.grass{
+    position:absolute;
+    inset:120px 0 0;
+    background:
+    repeating-linear-gradient(
+        45deg,
+        #68aa57 0 25px,
+        #73b860 25px 50px
+    );
+}
+
+.fence{
+    position:absolute;
+    left:40px;
+    right:40px;
+    top:240px;
+    height:220px;
+    border:10px solid #8a5a2b;
+}
+
+/* CAVALOS 2D */
+
+.horse2d{
+    position:absolute;
+    width:150px;
+    height:110px;
+    z-index:20;
+}
+
+.horseBody{
+    position:absolute;
+    left:30px;
+    top:35px;
+    width:90px;
+    height:45px;
+    border-radius:45%;
+    background:#8b5a2b;
+    border:3px solid #442c18;
+}
+
+.horseNeck{
+    position:absolute;
+    left:105px;
+    top:14px;
+    width:28px;
+    height:58px;
+    background:#8b5a2b;
+    border:3px solid #442c18;
+    transform:rotate(-20deg);
+    border-radius:14px;
+}
+
+.horseHead{
+    position:absolute;
+    left:118px;
+    top:5px;
+    width:38px;
+    height:28px;
+    background:#8b5a2b;
+    border:3px solid #442c18;
+    border-radius:45% 55% 55% 45%;
+}
+
+.horseEar{
+    position:absolute;
+    left:130px;
+    top:-6px;
+    width:8px;
+    height:16px;
+    background:#8b5a2b;
+    border:2px solid #442c18;
+    transform:rotate(-15deg);
+}
+
+.horseEye{
+    position:absolute;
+    left:143px;
+    top:12px;
+    width:4px;
+    height:4px;
+    border-radius:50%;
+    background:#111;
+}
+
+.horseLeg{
+    position:absolute;
+    top:72px;
+    width:12px;
+    height:38px;
+    background:#8b5a2b;
+    border:2px solid #442c18;
+}
+
+.hl1{left:45px;}
+.hl2{left:67px;}
+.hl3{left:96px;}
+.hl4{left:112px;}
+
+.horseTail{
+    position:absolute;
+    left:13px;
+    top:38px;
+    width:35px;
+    height:10px;
+    border-radius:50%;
+    background:#3b2517;
+    transform:rotate(25deg);
+}
+
+.horseMane{
+    position:absolute;
+    left:103px;
+    top:13px;
+    width:14px;
+    height:55px;
+    background:#3b2517;
+    transform:rotate(-20deg);
+    border-radius:10px;
+}
+
+.horseA{left:140px;top:260px;}
+.horseB{left:405px;top:220px;transform:scale(.9);}
+.horseC{right:130px;top:300px;transform:scale(.8);}
+
+/* BOTÕES */
+
+.actionButton{
+    position:absolute;
+    right:20px;
+    z-index:900;
+    border:0;
+    border-radius:12px;
+    padding:13px 17px;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#mainAction{
+    bottom:20px;
+    background:#e63946;
+}
+
+#workButton{
+    bottom:80px;
+    background:#239b49;
+}
+
+#interactButton{
+    bottom:140px;
+    background:#2364aa;
+}
+
+#vehicleButton{
+    bottom:200px;
+    background:#e07a1f;
+    display:none;
+}
+
+/* JOYSTICK */
+
+#joystick{
+    position:absolute;
+    left:22px;
+    bottom:22px;
+    z-index:900;
+    width:125px;
+    height:125px;
+    border-radius:50%;
+    background:rgba(0,0,0,.35);
+    border:3px solid rgba(255,255,255,.8);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    touch-action:none;
+}
+
+#stick{
+    width:55px;
+    height:55px;
+    background:white;
+    border:3px solid #444;
+    border-radius:50%;
+}
+
+/* CAIXA */
+
+#cashPanel{
+    position:absolute;
+    z-index:3000;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width:390px;
+    max-width:92%;
+    background:white;
+    border:4px solid #333;
+    border-radius:18px;
+    padding:20px;
+    text-align:center;
+    display:none;
+}
+
+.cashInfo{
+    padding:10px;
+    margin:8px 0;
+    background:#eee;
+    border-radius:8px;
+}
+
+#changeOptions{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:7px;
+    margin-top:10px;
+}
+
+.changeBtn{
+    padding:10px;
+    border:2px solid #333;
+    border-radius:8px;
+    background:#ffd166;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.panelBtn{
+    margin-top:10px;
+    padding:11px;
+    width:100%;
+    border:0;
+    border-radius:8px;
+    color:white;
+    background:#555;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#nextCustomer{
+    background:#239b49;
+}
+
+/* NOTIFICAÇÃO */
+
+#notification{
+    position:absolute;
+    z-index:5000;
+    top:75px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#222;
+    color:white;
+    padding:12px 18px;
+    border-radius:10px;
+    display:none;
+}
+
+@media(max-width:650px){
+    #game{
+        height:760px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+<!-- MENU -->
+
+<div id="startMenu">
+    <div class="menuBox">
+        <h1>🇧🇷 Mercado City Brasil</h1>
+        <p>
+            Trabalhe no mercado, dê troco, explore a cidade,
+            pilote moto, dirija carro e visite as lojas.
+        </p>
+        <button id="playButton">▶ JOGAR</button>
+    </div>
+</div>
+
+<div id="notification"></div>
+
+<!-- HUD -->
+
+<div id="hud">
+    <div class="hudBox" id="location">🛒 Mercado</div>
+    <div class="hudBox">💰 R$ <span id="money">50</span></div>
+</div>
+
+<!-- MERCADO -->
+
+<div id="marketScene" class="scene active">
+
+    <div class="wall"></div>
+
+    <div class="sceneTitle">
+        🇧🇷 Mercado do Bairro
+    </div>
+
+    <div class="shelf" id="s1"><div class="products"></div></div>
+    <div class="shelf" id="s2"><div class="products"></div></div>
+    <div class="shelf" id="s3"><div class="products"></div></div>
+    <div class="shelf" id="s4"><div class="products"></div></div>
+
+    <div class="cashier">
+        🧾 CAIXA
+    </div>
+
+</div>
+
+<!-- CIDADE -->
+
+<div id="cityScene" class="scene">
+
+    <div class="sun"></div>
+    <div class="kite"></div>
+
+    <div class="cityBuildings">
+
+        <div class="building b1">
+            <div class="window"></div>
+        </div>
+
+        <div class="building b2">
+            <div class="window"></div>
+        </div>
+
+        <div class="building b3">
+            <div class="window"></div>
+        </div>
+
+        <div class="building b4">
+            <div class="window"></div>
+        </div>
+
+    </div>
+
+    <div class="cityShop" id="marketShop">
+        🛒 Mercado
+    </div>
+
+    <div class="cityShop" id="carShop">
+        🚗 Loja de carros
+    </div>
+
+    <div class="cityShop" id="calculatorShop">
+        🧮 Calculadoras
+    </div>
+
+    <div class="cityShop" id="horseShop">
+        🐴 Haras
+    </div>
+
+    <div class="sidewalk"></div>
+    <div class="road"></div>
+    <div class="roadLine"></div>
+
+    <!-- CARRO -->
+
+    <div id="driveCar">
+        <div class="carWindow"></div>
+    </div>
+
+    <!-- MOTO -->
+
+    <div id="driveMoto">
+
+        <div class="motoRider" id="motoRider">
+
+            <div class="riderHead"></div>
+            <div class="riderBody"></div>
+            <div class="riderArm"></div>
+            <div class="riderLeg"></div>
+
+        </div>
+
+        <div class="motoBody"></div>
+        <div class="motoWheel left"></div>
+        <div class="motoWheel right"></div>
+        <div class="handle"></div>
+
+    </div>
+
+</div>
+
+<!-- LOJA CARROS -->
+
+<div id="carScene" class="scene">
+
+    <div class="sceneTitle">
+        🚗 Auto Brasil
+    </div>
+
+    <div class="showroomFloor"></div>
+
+    <div class="showCar redCar"></div>
+    <div class="showCar blueCar"></div>
+    <div class="showCar yellowCar"></div>
+
+    <div class="price p1">R$ 30.000</div>
+    <div class="price p2">R$ 45.000</div>
+    <div class="price p3">R$ 70.000</div>
+
+</div>
+
+<!-- LOJA CALCULADORAS -->
+
+<div id="calculatorScene" class="scene">
+
+    <div class="sceneTitle">
+        🧮 Mundo das Calculadoras
+    </div>
+
+    <div class="calcStoreCounter">
+        CAIXA
+    </div>
+
+    <div class="calcShelf calc1">
+
+        <div class="calculatorName">
+            Básica
+        </div>
+
+        <div class="calculator">
+
+            <div class="calcDisplay">
+                123
+            </div>
+
+            <div class="calcButtons">
+
+                <div class="calcBtn">7</div>
+                <div class="calcBtn">8</div>
+                <div class="calcBtn">9</div>
+                <div class="calcBtn">4</div>
+                <div class="calcBtn">5</div>
+                <div class="calcBtn">6</div>
+
+            </div>
+
+        </div>
+
+        <div class="calculatorPrice">
+            R$ 25
+        </div>
+
+    </div>
+
+    <div class="calcShelf calc2">
+
+        <div class="calculatorName">
+            Escolar
+        </div>
+
+        <div class="calculator">
+
+            <div class="calcDisplay">
+                456
+            </div>
+
+            <div class="calcButtons">
+
+                <div class="calcBtn">1</div>
+                <div class="calcBtn">2</div>
+                <div class="calcBtn">3</div>
+                <div class="calcBtn">+</div>
+                <div class="calcBtn">-</div>
+                <div class="calcBtn">=</div>
+
+            </div>
+
+        </div>
+
+        <div class="calculatorPrice">
+            R$ 60
+        </div>
+
+    </div>
+
+    <div class="calcShelf calc3">
+
+        <div class="calculatorName">
+            Científica
+        </div>
+
+        <div class="calculator">
+
+            <div class="calcDisplay">
+                999
+            </div>
+
+            <div class="calcButtons">
+
+                <div class="calcBtn">sin</div>
+                <div class="calcBtn">cos</div>
+                <div class="calcBtn">√</div>
+                <div class="calcBtn">×</div>
+                <div class="calcBtn">÷</div>
+                <div class="calcBtn">=</div>
+
+            </div>
+
+        </div>
+
+        <div class="calculatorPrice">
+            R$ 120
+        </div>
+
+    </div>
+
+    <button id="useCalculatorButton">
+        🧮 Usar calculadora
+    </button>
+
+    <div id="calculatorPanel">
+
+        <h3>Calculadora</h3>
+
+        <input
+            id="calcInput"
+            type="text"
+            readonly
+            value=""
+        >
+
+        <div class="realCalcKeys">
+
+            <button>7</button>
+            <button>8</button>
+            <button>9</button>
+            <button>+</button>
+
+            <button>4</button>
+            <button>5</button>
+            <button>6</button>
+            <button>-</button>
+
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>*</button>
+
+            <button>0</button>
+            <button>.</button>
+            <button>=</button>
+            <button>/</button>
+
+        </div>
+
+        <button id="clearCalculator">
+            Limpar
+        </button>
+
+        <button id="closeCalculator">
+            Fechar
+        </button>
+
+    </div>
+
+</div>
+
+<!-- HARAS -->
+
+<div id="horseScene" class="scene">
+
+    <div class="sceneTitle">
+        🐴 Haras do Bairro
+    </div>
+
+    <div class="grass"></div>
+    <div class="fence"></div>
+
+    <div class="horse2d horseA">
+
+        <div class="horseTail"></div>
+        <div class="horseBody"></div>
+        <div class="horseMane"></div>
+        <div class="horseNeck"></div>
+        <div class="horseHead"></div>
+        <div class="horseEar"></div>
+        <div class="horseEye"></div>
+
+        <div class="horseLeg hl1"></div>
+        <div class="horseLeg hl2"></div>
+        <div class="horseLeg hl3"></div>
+        <div class="horseLeg hl4"></div>
+
+    </div>
+
+    <div class="horse2d horseB">
+
+        <div class="horseTail"></div>
+        <div class="horseBody"></div>
+        <div class="horseMane"></div>
+        <div class="horseNeck"></div>
+        <div class="horseHead"></div>
+        <div class="horseEar"></div>
+        <div class="horseEye"></div>
+
+        <div class="horseLeg hl1"></div>
+        <div class="horseLeg hl2"></div>
+        <div class="horseLeg hl3"></div>
+        <div class="horseLeg hl4"></div>
+
+    </div>
+
+    <div class="horse2d horseC">
+
+        <div class="horseTail"></div>
+        <div class="horseBody"></div>
+        <div class="horseMane"></div>
+        <div class="horseNeck"></div>
+        <div class="horseHead"></div>
+        <div class="horseEar"></div>
+        <div class="horseEye"></div>
+
+        <div class="horseLeg hl1"></div>
+        <div class="horseLeg hl2"></div>
+        <div class="horseLeg hl3"></div>
+        <div class="horseLeg hl4"></div>
+
+    </div>
+
+</div>
+
+<!-- PLAYER -->
+
+<div id="player">
+
+    <div class="character">
+
+        <div class="hair"></div>
+
+        <div class="head">
+            <div class="eye"></div>
+        </div>
+
+        <div class="arm armLeft"></div>
+        <div class="arm armRight"></div>
+
+        <div class="playerBody"></div>
+
+        <div class="leg legLeft"></div>
+        <div class="leg legRight"></div>
+
+    </div>
+
+</div>
+
+<!-- BOTÕES -->
+
+<button id="vehicleButton" class="actionButton">
+    🚗 Entrar no veículo
+</button>
+
+<button id="interactButton" class="actionButton">
+    🔵 Interagir
+</button>
+
+<button id="workButton" class="actionButton">
+    💼 Trabalhar no caixa
+</button>
+
+<button id="mainAction" class="actionButton">
+    🚪 Sair
+</button>
+
+<!-- JOYSTICK -->
+
+<div id="joystick">
+    <div id="stick"></div>
+</div>
+
+<!-- CAIXA -->
+
+<div id="cashPanel">
+
+    <h2>🧾 Caixa</h2>
+
+    <div id="customerFace" style="font-size:42px">
+        👤
+    </div>
+
+    <div id="productName">
+        Refrigerante
+    </div>
+
+    <div class="cashInfo">
+        Total:
+        R$ <span id="total">10</span>
+    </div>
+
+    <div class="cashInfo">
+        Cliente pagou:
+        R$ <span id="payment">20</span>
+    </div>
+
+    <p>Qual é o troco?</p>
+
+    <div id="changeOptions"></div>
+
+    <div id="cashResult"></div>
+
+    <button id="nextCustomer" class="panelBtn">
+        Próximo cliente
+    </button>
+
+    <button id="closeCash" class="panelBtn">
+        Encerrar trabalho
+    </button>
+
+</div>
+
+</div>
+
+<script>
+
+/* =========================
+ELEMENTOS PRINCIPAIS
+========================= */
+
+const player =
+document.getElementById("player");
+
+const joystick =
+document.getElementById("joystick");
+
+const stick =
+document.getElementById("stick");
+
+const moneyText =
+document.getElementById("money");
+
+const locationText =
+document.getElementById("location");
+
+const notification =
+document.getElementById("notification");
+
+const mainAction =
+document.getElementById("mainAction");
+
+const interactButton =
+document.getElementById("interactButton");
+
+const workButton =
+document.getElementById("workButton");
+
+const vehicleButton =
+document.getElementById("vehicleButton");
+
+const driveCar =
+document.getElementById("driveCar");
+
+const driveMoto =
+document.getElementById("driveMoto");
+
+const motoRider =
+document.getElementById("motoRider");
+
+const playButton =
+document.getElementById("playButton");
+
+const startMenu =
+document.getElementById("startMenu");
+
+
+const scenes = {
+
+    market:
+    document.getElementById("marketScene"),
+
+    city:
+    document.getElementById("cityScene"),
+
+    cars:
+    document.getElementById("carScene"),
+
+    calculators:
+    document.getElementById("calculatorScene"),
+
+    horses:
+    document.getElementById("horseScene")
+
+};
+
+
+/* =========================
+ESTADO DO JOGO
+========================= */
+
+let gameStarted = false;
+
+let currentScene = "market";
+
+let money = 50;
+
+let playerX = 50;
+let playerY = 70;
+
+let directionX = 0;
+let directionY = 0;
+
+let joystickActive = false;
+
+let working = false;
+
+let currentVehicle = null;
+
+
+/* POSIÇÕES DOS VEÍCULOS */
+
+let carX = 63;
+let carY = 76;
+
+let motoX = 30;
+let motoY = 86;
+
+
+/* =========================
+MENU
+========================= */
+
+playButton.addEventListener(
+"click",
+()=>{
+
+    gameStarted = true;
+
+    startMenu.style.display =
+    "none";
+
+    showMessage(
+        "Bem-vindo ao Mercado City Brasil! 🇧🇷"
+    );
+
+}
+);
+
+
+/* =========================
+MUDAR CENÁRIO
+========================= */
+
+function changeScene(scene){
+
+    Object.values(
+        scenes
+    ).forEach(
+        item =>
+        item.classList.remove("active")
+    );
+
+
+    scenes[scene].classList.add(
+        "active"
+    );
+
+
+    currentScene = scene;
+
+    playerX = 50;
+    playerY = 70;
+
+    currentVehicle = null;
+
+    player.style.display =
+    "block";
+
+    motoRider.style.display =
+    "none";
+
+    vehicleButton.innerText =
+    "🚗 Entrar no veículo";
+
+
+    if(scene === "market"){
+
+        locationText.innerText =
+        "🛒 Mercado";
+
+        mainAction.innerText =
+        "🚪 Sair";
+
+        workButton.style.display =
+        "block";
+
+        vehicleButton.style.display =
+        "none";
+
+    }
+
+
+    if(scene === "city"){
+
+        locationText.innerText =
+        "🏙️ Cidade";
+
+        mainAction.innerText =
+        "🛒 Entrar no mercado";
+
+        workButton.style.display =
+        "none";
+
+        vehicleButton.style.display =
+        "block";
+
+    }
+
+
+    if(scene === "cars"){
+
+        locationText.innerText =
+        "🚗 Loja de carros";
+
+        mainAction.innerText =
+        "⬅ Voltar";
+
+        workButton.style.display =
+        "none";
+
+        vehicleButton.style.display =
+        "none";
+
+    }
+
+
+    if(scene === "calculators"){
+
+        locationText.innerText =
+        "🧮 Loja de calculadoras";
+
+        mainAction.innerText =
+        "⬅ Voltar";
+
+        workButton.style.display =
+        "none";
+
+        vehicleButton.style.display =
+        "none";
+
+    }
+
+
+    if(scene === "horses"){
+
+        locationText.innerText =
+        "🐴 Haras";
+
+        mainAction.innerText =
+        "⬅ Voltar";
+
+        workButton.style.display =
+        "none";
+
+        vehicleButton.style.display =
+        "none";
+
+    }
+
+}
+
+
+/* =========================
+BOTÃO PRINCIPAL
+========================= */
+
+mainAction.addEventListener(
+"click",
+()=>{
+
+    if(!gameStarted)
+    return;
+
+
+    if(currentVehicle){
+
+        exitVehicle();
+
+        return;
+
+    }
+
+
+    if(currentScene === "market"){
+
+        changeScene("city");
+
+        return;
+
+    }
+
+
+    if(currentScene === "city"){
+
+        changeScene("market");
+
+        return;
+
+    }
+
+
+    changeScene("city");
+
+}
+);
+
+
+/* =========================
+INTERAGIR
+========================= */
+
+interactButton.addEventListener(
+"click",
+()=>{
+
+    if(!gameStarted)
+    return;
+
+
+    if(currentVehicle){
+
+        showMessage(
+            "Saia do veículo primeiro."
+        );
+
+        return;
+
+    }
+
+
+    if(currentScene !== "city"){
+
+        showMessage(
+            "Volte para a cidade para explorar."
+        );
+
+        return;
+
+    }
+
+
+    if(playerX < 24){
+
+        changeScene("market");
+
+        return;
+
+    }
+
+
+    if(
+        playerX >= 24 &&
+        playerX < 47
+    ){
+
+        changeScene("cars");
+
+        showMessage(
+            "Bem-vindo à Auto Brasil 🚗"
+        );
+
+        return;
+
+    }
+
+
+    if(
+        playerX >= 47 &&
+        playerX < 71
+    ){
+
+        changeScene("calculators");
+
+        showMessage(
+            "Bem-vindo à loja de calculadoras 🧮"
+        );
+
+        return;
+
+    }
+
+
+    if(playerX >= 71){
+
+        changeScene("horses");
+
+        showMessage(
+            "Você chegou ao haras 🐴"
+        );
+
+    }
+
+}
+);
+
+
+/* =========================
+ENTRAR EM VEÍCULO
+========================= */
+
+vehicleButton.addEventListener(
+"click",
+()=>{
+
+    if(
+        !gameStarted ||
+        currentScene !== "city"
+    )
+    return;
+
+
+    if(currentVehicle){
+
+        exitVehicle();
+
+        return;
+
+    }
+
+
+    const carDistance =
+
+    Math.abs(
+        playerX - carX
+    )
+    +
+    Math.abs(
+        playerY - carY
+    );
+
+
+    const motoDistance =
+
+    Math.abs(
+        playerX - motoX
+    )
+    +
+    Math.abs(
+        playerY - motoY
+    );
+
+
+    if(
+        carDistance <
+        motoDistance &&
+        carDistance < 25
+    ){
+
+        enterVehicle("car");
+
+        return;
+
+    }
+
+
+    if(motoDistance < 25){
+
+        enterVehicle("moto");
+
+        return;
+
+    }
+
+
+    showMessage(
+        "Chegue mais perto do carro ou da moto."
+    );
+
+}
+);
+
+
+function enterVehicle(type){
+
+    currentVehicle = type;
+
+    player.style.display =
+    "none";
+
+    vehicleButton.innerText =
+    "🚪 Sair do veículo";
+
+    mainAction.innerText =
+    "🚪 Sair do veículo";
+
+
+    if(type === "car"){
+
+        motoRider.style.display =
+        "none";
+
+        showMessage(
+            "Você entrou no carro! 🚗"
+        );
+
+    }
+
+
+    if(type === "moto"){
+
+        motoRider.style.display =
+        "block";
+
+        showMessage(
+            "Você sentou na moto! 🏍️"
+        );
+
+    }
+
+}
+
+
+/* =========================
+SAIR DO VEÍCULO
+========================= */
+
+function exitVehicle(){
+
+    if(currentVehicle === "car"){
+
+        playerX =
+        carX + 8;
+
+        playerY =
+        carY;
+
+    }
+
+
+    if(currentVehicle === "moto"){
+
+        playerX =
+        motoX + 8;
+
+        playerY =
+        motoY;
+
+    }
+
+
+    currentVehicle = null;
+
+    motoRider.style.display =
+    "none";
+
+    player.style.display =
+    "block";
+
+    vehicleButton.innerText =
+    "🚗 Entrar no veículo";
+
+    mainAction.innerText =
+    "🛒 Entrar no mercado";
+
+    showMessage(
+        "Você saiu do veículo."
+    );
+
+}
+
+
+/* =========================
+MOVIMENTO
+========================= */
+
+function updateGame(){
+
+    if(
+        !gameStarted ||
+        working
+    )
+    return;
+
+
+    /* CARRO */
+
+    if(currentVehicle === "car"){
+
+        carX +=
+        directionX * .85;
+
+        carY +=
+        directionY * .65;
+
+
+        carX =
+        Math.max(
+            5,
+            Math.min(
+                88,
+                carX
+            )
+        );
+
+
+        carY =
+        Math.max(
+            68,
+            Math.min(
+                91,
+                carY
+            )
+        );
+
+
+        driveCar.style.left =
+        carX + "%";
+
+        driveCar.style.top =
+        carY + "%";
+
+
+        return;
+
+    }
+
+
+    /* MOTO */
+
+    if(currentVehicle === "moto"){
+
+        motoX +=
+        directionX * 1.05;
+
+        motoY +=
+        directionY * .8;
+
+
+        motoX =
+        Math.max(
+            5,
+            Math.min(
+                90,
+                motoX
+            )
+        );
+
+
+        motoY =
+        Math.max(
+            68,
+            Math.min(
+                92,
+                motoY
+            )
+        );
+
+
+        driveMoto.style.left =
+        motoX + "%";
+
+        driveMoto.style.top =
+        motoY + "%";
+
+
+        if(directionX < -.05){
+
+            driveMoto.style.transform =
+            "scaleX(-1)";
+
+        }
+
+
+        if(directionX > .05){
+
+            driveMoto.style.transform =
+            "scaleX(1)";
+
+        }
+
+
+        return;
+
+    }
+
+
+    /* PERSONAGEM */
+
+    playerX +=
+    directionX * .5;
+
+    playerY +=
+    directionY * .5;
+
+
+    playerX =
+    Math.max(
+        3,
+        Math.min(
+            97,
+            playerX
+        )
+    );
+
+
+    playerY =
+    Math.max(
+        12,
+        Math.min(
+            95,
+            playerY
+        )
+    );
+
+
+    if(directionX < -.05){
+
+        player.classList.add(
+            "faceLeft"
+        );
+
+    }
+
+
+    if(directionX > .05){
+
+        player.classList.remove(
+            "faceLeft"
+        );
+
+    }
+
+
+    const walking =
+
+    Math.abs(directionX) > .05
+
+    ||
+
+    Math.abs(directionY) > .05;
+
+
+    if(walking){
+
+        player.classList.add(
+            "walking"
+        );
+
+    }
+    else{
+
+        player.classList.remove(
+            "walking"
+        );
+
+    }
+
+
+    player.style.left =
+    playerX + "%";
+
+
+    player.style.top =
+    playerY + "%";
+
+}
+
+
+/* =========================
+LOOP
+========================= */
+
+function gameLoop(){
+
+    updateGame();
+
+    requestAnimationFrame(
+        gameLoop
+    );
+
+}
+
+gameLoop();
+
+
+/* =========================
+JOYSTICK
+========================= */
+
+function joystickMove(event){
+
+    if(
+        !joystickActive ||
+        !gameStarted
+    )
+    return;
+
+
+    const rect =
+    joystick.getBoundingClientRect();
+
+
+    const centerX =
+    rect.left +
+    rect.width / 2;
+
+
+    const centerY =
+    rect.top +
+    rect.height / 2;
+
+
+    let x =
+    event.clientX -
+    centerX;
+
+
+    let y =
+    event.clientY -
+    centerY;
+
+
+    const max =
+    35;
+
+
+    const distance =
+    Math.sqrt(
+        x*x +
+        y*y
+    );
+
+
+    if(distance > max){
+
+        x =
+        x /
+        distance *
+        max;
+
+        y =
+        y /
+        distance *
+        max;
+
+    }
+
+
+    stick.style.transform =
+    `translate(${x}px,${y}px)`;
+
+
+    directionX =
+    x / max;
+
+
+    directionY =
+    y / max;
+
+}
+
+
+joystick.addEventListener(
+"pointerdown",
+event=>{
+
+    joystickActive =
+    true;
+
+    joystick.setPointerCapture(
+        event.pointerId
+    );
+
+    joystickMove(event);
+
+}
+);
+
+
+joystick.addEventListener(
+"pointermove",
+joystickMove
+);
+
+
+function stopJoystick(){
+
+    joystickActive =
+    false;
+
+    directionX =
+    0;
+
+    directionY =
+    0;
+
+    stick.style.transform =
+    "translate(0,0)";
+
+}
+
+
+joystick.addEventListener(
+"pointerup",
+stopJoystick
+);
+
+
+joystick.addEventListener(
+"pointercancel",
+stopJoystick
+);
+
+
+/* =========================
+TECLADO
+========================= */
+
+const keys = {};
+
+
+document.addEventListener(
+"keydown",
+event=>{
+
+    if(!gameStarted)
+    return;
+
+
+    keys[
+        event.key.toLowerCase()
+    ] = true;
+
+
+    updateKeyboard();
+
+}
+);
+
+
+document.addEventListener(
+"keyup",
+event=>{
+
+    keys[
+        event.key.toLowerCase()
+    ] = false;
+
+
+    updateKeyboard();
+
+}
+);
+
+
+function updateKeyboard(){
+
+    directionX = 0;
+    directionY = 0;
+
+
+    if(
+        keys["a"] ||
+        keys["arrowleft"]
+    ){
+
+        directionX = -1;
+
+    }
+
+
+    if(
+        keys["d"] ||
+        keys["arrowright"]
+    ){
+
+        directionX = 1;
+
+    }
+
+
+    if(
+        keys["w"] ||
+        keys["arrowup"]
+    ){
+
+        directionY = -1;
+
+    }
+
+
+    if(
+        keys["s"] ||
+        keys["arrowdown"]
+    ){
+
+        directionY = 1;
+
+    }
+
+}
+
+
+/* =========================
+CAIXA
+========================= */
+
+const cashPanel =
+document.getElementById(
+    "cashPanel"
+);
+
+const productName =
+document.getElementById(
+    "productName"
+);
+
+const totalText =
+document.getElementById(
+    "total"
+);
+
+const paymentText =
+document.getElementById(
+    "payment"
+);
+
+const changeOptions =
+document.getElementById(
+    "changeOptions"
+);
+
+const cashResult =
+document.getElementById(
+    "cashResult"
+);
+
+const nextCustomer =
+document.getElementById(
+    "nextCustomer"
+);
+
+const closeCash =
+document.getElementById(
+    "closeCash"
+);
+
+
+let correctChange = 0;
+
+let answered = false;
+
+
+const productsList = [
+
+    ["🥤 Refrigerante",8],
+
+    ["🍞 Pão",6],
+
+    ["🥛 Leite",7],
+
+    ["🍫 Chocolate",9],
+
+    ["☕ Café",18],
+
+    ["🍚 Arroz",28],
+
+    ["🍪 Biscoito",5],
+
+    ["🧃 Suco",6],
+
+    ["🧀 Queijo",14],
+
+    ["🥩 Carne",32]
+
+];
+
+
+workButton.addEventListener(
+"click",
+()=>{
+
+    if(
+        !gameStarted ||
+        currentScene !== "market"
+    )
+    return;
+
+
+    working = true;
+
+    directionX = 0;
+    directionY = 0;
+
+    cashPanel.style.display =
+    "block";
+
+
+    newCustomer();
+
+}
+);
+
+
+/* NOVO CLIENTE */
+
+function newCustomer(){
+
+    answered = false;
+
+    cashResult.innerText =
+    "";
+
+    changeOptions.innerHTML =
+    "";
+
+
+    const product =
+
+    productsList[
+
+        Math.floor(
+            Math.random() *
+            productsList.length
+        )
+
+    ];
+
+
+    const quantity =
+
+    Math.floor(
+        Math.random() * 3
+    ) + 1;
+
+
+    const total =
+
+    product[1] *
+    quantity;
+
+
+    const notes =
+
+    [10,20,50,100,200];
+
+
+    const possible =
+
+    notes.filter(
+        value =>
+        value >= total
+    );
+
+
+    const payment =
+
+    possible[
+
+        Math.floor(
+            Math.random() *
+            possible.length
+        )
+
+    ];
+
+
+    correctChange =
+    payment -
+    total;
+
+
+    productName.innerText =
+
+    product[0] +
+    " x" +
+    quantity;
+
+
+    totalText.innerText =
+    total;
+
+
+    paymentText.innerText =
+    payment;
+
+
+    createChangeOptions();
+
+}
+
+
+/* OPÇÕES DO TROCO */
+
+function createChangeOptions(){
+
+    let options = [
+
+        correctChange,
+
+        correctChange + 2,
+
+        Math.max(
+            0,
+            correctChange - 2
+        ),
+
+        correctChange + 5,
+
+        Math.max(
+            0,
+            correctChange - 5
+        ),
+
+        correctChange + 10
+
+    ];
+
+
+    options =
+    [...new Set(options)];
+
+
+    while(options.length < 6){
+
+        const number =
+
+        Math.floor(
+            Math.random() * 50
+        );
+
+
+        if(
+            !options.includes(number)
+        ){
+
+            options.push(number);
+
+        }
+
+    }
+
+
+    options.sort(
+        ()=>Math.random()-.5
+    );
+
+
+    options.forEach(
+    value=>{
+
+        const button =
+        document.createElement(
+            "button"
+        );
+
+
+        button.className =
+        "changeBtn";
+
+
+        button.innerText =
+        "R$ " + value;
+
+
+        button.addEventListener(
+        "click",
+        ()=>{
+
+            checkChange(value);
+
+        });
+
+
+        changeOptions.appendChild(
+            button
+        );
+
+    });
+
+}
+
+
+/* VALIDAR TROCO */
+
+function checkChange(value){
+
+    if(answered)
+    return;
+
+
+    if(
+        value ===
+        correctChange
+    ){
+
+        answered =
+        true;
+
+
+        cashResult.innerText =
+        "✅ Troco correto!";
+
+
+        cashResult.style.color =
+        "green";
+
+
+        const salary =
+
+        Math.floor(
+            Math.random() * 5
+        ) + 3;
+
+
+        money += salary;
+
+
+        moneyText.innerText =
+        money;
+
+
+        showMessage(
+            "Bom atendimento! + R$" +
+            salary
+        );
+
+    }
+
+    else{
+
+        cashResult.innerText =
+        "❌ Troco errado. Tente novamente.";
+
+
+        cashResult.style.color =
+        "red";
+
+    }
+
+}
+
+
+nextCustomer.addEventListener(
+"click",
+()=>{
+
+    if(!answered){
+
+        showMessage(
+            "Acerte o troco primeiro."
+        );
+
+        return;
+
+    }
+
+
+    newCustomer();
+
+}
+);
+
+
+closeCash.addEventListener(
+"click",
+()=>{
+
+    working =
+    false;
+
+
+    cashPanel.style.display =
+    "none";
+
+
+    showMessage(
+        "Turno encerrado."
+    );
+
+}
+);
+
+
+/* =========================
+CALCULADORA FUNCIONAL
+========================= */
+
+const useCalculatorButton =
+document.getElementById(
+    "useCalculatorButton"
+);
+
+const calculatorPanel =
+document.getElementById(
+    "calculatorPanel"
+);
+
+const calcInput =
+document.getElementById(
+    "calcInput"
+);
+
+const clearCalculator =
+document.getElementById(
+    "clearCalculator"
+);
+
+const closeCalculator =
+document.getElementById(
+    "closeCalculator"
+);
+
+const realCalcKeys =
+document.querySelectorAll(
+    ".realCalcKeys button"
+);
+
+
+useCalculatorButton.addEventListener(
+"click",
+()=>{
+
+    if(
+        currentScene !==
+        "calculators"
+    )
+    return;
+
+
+    calculatorPanel.style.display =
+    "block";
+
+}
+);
+
+
+realCalcKeys.forEach(
+button=>{
+
+    button.addEventListener(
+    "click",
+    ()=>{
+
+        const value =
+        button.innerText;
+
+
+        if(value === "="){
+
+            const expression =
+            calcInput.value;
+
+
+            if(
+                !/^[0-9+\-*/.() ]+$/.test(
+                    expression
+                )
+            ){
+
+                calcInput.value =
+                "Erro";
+
+                return;
+
+            }
+
+
+            try{
+
+                calcInput.value =
+                Function(
+                    `"use strict"; return (${expression})`
+                )();
+
+            }
+
+            catch{
+
+                calcInput.value =
+                "Erro";
+
+            }
+
+
+            return;
+
+        }
+
+
+        if(
+            calcInput.value ===
+            "Erro"
+        ){
+
+            calcInput.value =
+            "";
+
+        }
+
+
+        calcInput.value +=
+        value;
+
+    }
+    );
+
+}
+);
+
+
+clearCalculator.addEventListener(
+"click",
+()=>{
+
+    calcInput.value =
+    "";
+
+}
+);
+
+
+closeCalculator.addEventListener(
+"click",
+()=>{
+
+    calculatorPanel.style.display =
+    "none";
+
+}
+);
+
+
+/* =========================
+NOTIFICAÇÃO
+========================= */
+
+function showMessage(text){
+
+    notification.innerText =
+    text;
+
+
+    notification.style.display =
+    "block";
+
+
+    setTimeout(
+    ()=>{
+
+        notification.style.display =
+        "none";
+
+    },
+    1700
+    );
+
+}
+
+</script>
+
+</body>
+</html>
